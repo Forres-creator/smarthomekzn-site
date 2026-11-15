@@ -173,7 +173,9 @@ h1 .line:nth-child(2) > span{animation-delay:.12s}h1 .line:nth-child(3) > span{a
 
 /* voice */
 .voice{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
-.chat{border:1px solid var(--line);background:var(--bg2);padding:28px;min-height:330px;display:flex;flex-direction:column;gap:14px;justify-content:flex-end;overflow:hidden}
+/* fixed height: new messages push old ones out at the top instead of growing the page */
+.chat{border:1px solid var(--line);background:var(--bg2);padding:28px;height:360px;display:flex;flex-direction:column;gap:14px;justify-content:flex-end;overflow:hidden;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 22%);mask-image:linear-gradient(180deg,transparent 0,#000 22%)}
+.chat > *{flex-shrink:0}
 .msg{max-width:85%;padding:14px 18px;font-size:15px;animation:evIn .45s cubic-bezier(.2,.8,.2,1)}
 .msg.me{align-self:flex-end;background:#1E2229;border:1px solid var(--line2)}
 .msg.home{align-self:flex-start;border-left:2px solid var(--warm);background:rgba(255,194,122,.05)}
@@ -303,6 +305,8 @@ footer{padding:80px 0 40px;margin-top:140px;border-top:1px solid var(--line)}
   .step h3{margin-top:14px}
   .block{padding:96px 0}
   .plan{padding:12px}
+  .chat{height:340px;padding:18px}
+  .msg{font-size:14px;padding:12px 14px}
   .hint{display:none}
   .formbox{padding:24px}
   .ro b{font-size:14px}
@@ -775,7 +779,7 @@ async function chatLoop() {
   chat.appendChild(home);
   const txt = home.querySelector('span');
   for (const ch of a) { txt.textContent += ch; await wait(22); }
-  while (chat.children.length > 6) chat.firstChild.remove();
+  while (chat.children.length > 4) chat.firstChild.remove();
   await wait(2300);
   chatLoop();
 }
