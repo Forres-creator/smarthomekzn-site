@@ -9,7 +9,10 @@
     document.head.appendChild(meta);
     const tag = document.createElement('div');
     tag.textContent = 'Предварительная версия сайта для согласования · заявки в демо-режиме не отправляются';
-    tag.style.cssText = 'position:fixed;left:50%;top:0;transform:translateX(-50%);z-index:200;background:#FFC27A;color:#0A0B0D;font:600 12px/1.4 "Inter Tight",system-ui,sans-serif;padding:5px 14px;text-align:center;max-width:100%;';
+    tag.style.cssText = 'position:fixed;left:0;right:0;top:0;height:26px;z-index:200;background:#FFC27A;color:#0A0B0D;font:600 12px/26px "Inter Tight",system-ui,sans-serif;padding:0 12px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+    const shift = document.createElement('style');
+    shift.textContent = 'body{padding-top:26px}header{top:26px!important}.bar{top:98px!important}';
+    document.head.appendChild(shift);
     document.addEventListener('DOMContentLoaded', () => document.body.appendChild(tag));
   }
 
