@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Home — умный дом под ключ в Казани</title>
+<meta name="description" content="Умный дом под ключ в Казани: освещение, климат, безопасность, видеонаблюдение, контроль доступа и защита от протечек. Управление с телефона и голосом.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0B0D; --bg2:#101216; --panel:#14171C; --ink:#ECECEA; --mute:#8B9099; --dim:#5B6069;
+  --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.16);
+  --red:#E3262F; --warm:#FFC27A; --cool:#7FB8FF;
+  --sans:'Inter Tight',system-ui,sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--sans);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+img{display:block;max-width:100%}
+.wrap{max-width:1280px;margin:0 auto;padding:0 32px}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);display:inline-flex;align-items:center;gap:12px}
+.label b{color:var(--red);font-weight:500}
+h2{font-weight:700;font-size:clamp(32px,4.4vw,60px);line-height:1.02;letter-spacing:-.035em;margin:18px 0 0}
+h2 em{font-style:normal;color:var(--mute)}
+.lead{color:var(--mute);font-size:17px;max-width:520px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 10px var(--red);display:inline-block}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:14px;height:56px;padding:0 28px;font-weight:600;font-size:15px;letter-spacing:.01em;border:1px solid transparent;cursor:pointer;transition:background .25s,border-color .25s;white-space:nowrap}
+.btn .arr{transition:transform .25s}
+.btn:hover .arr{transform:translateX(5px)}
+.btn-red{background:var(--red);color:#fff}
+.btn-red:hover{background:#C81C24}
+.btn-line{border-color:var(--line2);color:var(--ink)}
+.btn-line:hover{border-color:var(--ink)}
+
+/* header */
+header{position:fixed;inset:0 0 auto;z-index:50;transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+header.scrolled{background:rgba(10,11,13,.85);backdrop-filter:blur(14px);border-color:var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:80px;gap:24px}
+.logo{display:flex;align-items:center;gap:14px;font-weight:800;font-size:16px;letter-spacing:.12em}
+.logo small{display:block;font-family:var(--mono);font-weight:400;font-size:9px;letter-spacing:.24em;color:var(--mute);margin-top:2px}
+.mark{width:34px;height:34px;border:1px solid var(--line2);display:grid;place-items:center}
+.mark svg{width:18px;height:18px;stroke:var(--ink);fill:none;stroke-width:1.5}
+.mark .win{fill:var(--warm);stroke:none;transition:opacity .4s}
+.menu{display:flex;gap:34px;font-size:14px;font-weight:500;color:#B7BBC2;white-space:nowrap}
+.menu a{transition:color .2s}.menu a:hover{color:#fff}
+.menu .cat-link{color:#fff;display:inline-flex;align-items:center;gap:8px}
+.menu .cat-link::before{content:"";width:6px;height:6px;background:var(--red)}
+.cat-btn{display:none}
+.sys-more{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-top:24px;padding:24px 28px;border:1px solid var(--line);background:var(--bg2)}
+.sys-more p{color:var(--mute);font-size:15px}
+.sys-more p b{color:var(--ink);font-weight:600}
+.nav-right{display:flex;align-items:center;gap:26px}
+.phone{font-family:var(--mono);font-size:14px;white-space:nowrap;letter-spacing:.02em}
+.nav .btn{height:44px;padding:0 20px;font-size:14px}
+
+/* HERO — the house at night */
+.hero{position:relative;height:100vh;min-height:760px;overflow:hidden;background:#05070B}
+.house{position:absolute;left:0;top:0}
+.house.fade{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 22%),linear-gradient(180deg,transparent 0,#000 16%);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent 0,#000 22%),linear-gradient(180deg,transparent 0,#000 16%);mask-composite:intersect}
+.house img{width:100%;height:100%;filter:brightness(.26) saturate(.55) contrast(1.15) hue-rotate(-10deg);transition:filter 1.2s}
+.house.lit img{filter:brightness(.34) saturate(.6) contrast(1.15) hue-rotate(-10deg)}
+.house::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,40,90,.35),rgba(5,7,11,0) 50%);mix-blend-mode:multiply;pointer-events:none}
+.w{position:absolute;background:var(--warm);mix-blend-mode:screen;opacity:0;transition:opacity 1s ease,box-shadow 1s;border-radius:2px;filter:blur(.4px)}
+.w.on{opacity:.62;box-shadow:0 0 40px 10px rgba(255,180,90,.35)}
+.w.dim.on{opacity:.3;box-shadow:0 0 24px 4px rgba(255,180,90,.2)}
+.w.round{border-radius:50% 50% 40% 40%}
+.lamp{position:absolute;width:8px;height:8px;margin:-4px;border-radius:50%;background:#FFE2B0;opacity:0;transition:opacity .8s,box-shadow .8s}
+.lamp.on{opacity:1;box-shadow:0 0 18px 8px rgba(255,200,120,.55),0 0 80px 30px rgba(255,170,80,.18)}
+.path{position:absolute;width:5px;height:5px;margin:-2.5px;border-radius:50%;background:#FFE9C4;opacity:0;transition:opacity .6s,box-shadow .6s}
+.path.on{opacity:1;box-shadow:0 0 12px 5px rgba(255,210,140,.5),0 8px 30px 6px rgba(255,190,110,.15)}
+.armed{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .6s}
+.armed.on{opacity:1}
+.armed i{position:absolute;width:10px;height:10px;margin:-5px;border-radius:50%;background:var(--red);box-shadow:0 0 14px 4px rgba(227,38,47,.7);animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.armed svg{position:absolute;inset:0;width:100%;height:100%}
+.armed path{fill:none;stroke:var(--red);stroke-width:1.5;stroke-dasharray:6 8;opacity:.7;animation:march 1s linear infinite}
+@keyframes march{to{stroke-dashoffset:-28}}
+.torch{position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(340px circle at var(--x,70%) var(--y,40%),rgba(255,210,150,.10),transparent 60%);mix-blend-mode:screen}
+.hero::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;background:
+  linear-gradient(90deg,rgba(10,11,13,.95) 0%,rgba(10,11,13,.7) 34%,rgba(10,11,13,0) 62%),
+  linear-gradient(0deg,rgba(10,11,13,1) 0%,rgba(10,11,13,0) 30%)}
+
+.hero-content{position:relative;z-index:6;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:64px}
+h1{font-weight:800;font-size:clamp(40px,6.2vw,96px);line-height:.95;letter-spacing:-.045em;max-width:760px}
+h1 .warm{color:var(--warm)}
+h1 .line{display:block;overflow:hidden;padding-bottom:.04em}
+h1 .line > span{display:block;transform:translateY(105%);animation:up 1s cubic-bezier(.2,.8,.2,1) forwards}
+h1 .line:nth-child(2) > span{animation-delay:.12s}h1 .line:nth-child(3) > span{animation-delay:.24s}
+@keyframes up{to{transform:none}}
+.hero-sub{max-width:520px;color:#B4B8BF;font-size:17px;margin:28px 0 34px}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap}
+
+/* control panel */
+.ctrl{position:absolute;right:32px;bottom:64px;z-index:7;width:360px;background:rgba(16,18,22,.72);backdrop-filter:blur(20px);border:1px solid var(--line2);padding:22px}
+.ctrl .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.ctrl .top span{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--mute)}
+.ctrl .top b{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.1em}
+.scenes{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.scene-btn{height:58px;border:1px solid var(--line);text-align:left;padding:0 14px;display:flex;flex-direction:column;justify-content:center;transition:border-color .25s,background .25s;position:relative;overflow:hidden}
+.scene-btn b{font-size:14px;font-weight:600}
+.scene-btn small{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--mute)}
+.scene-btn:hover{border-color:var(--line2)}
+.scene-btn.act{border-color:var(--warm);background:rgba(255,194,122,.08)}
+.scene-btn.act small{color:var(--warm)}
+.scene-btn .bar{position:absolute;left:0;bottom:0;height:2px;background:var(--warm);width:0}
+.scene-btn.act .bar{animation:fill 7s linear forwards}
+.ctrl.manual .scene-btn .bar{display:none}
+@keyframes fill{to{width:100%}}
+.readouts{display:grid;grid-template-columns:repeat(4,1fr);margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+.ro span{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--mute)}
+.ro b{font-size:16px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;transition:color .4s}
+.ro b.red{color:var(--red)}.ro b.warm{color:var(--warm)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}
+.stat{padding:26px 24px 0 0;border-right:1px solid var(--line)}
+.stat:not(:first-child){padding-left:28px}.stat:last-child{border:0}
+.stat b{display:block;font-size:28px;font-weight:700;letter-spacing:-.03em;line-height:1.1}
+.stat span{font-size:13px;color:var(--mute)}
+
+.block{padding:140px 0;position:relative}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;flex-wrap:wrap;margin-bottom:56px}
+
+/* floor plan */
+.planbox{display:grid;grid-template-columns:1fr 340px;gap:2px;background:var(--line);border:1px solid var(--line)}
+.plan{background:#0C0E12;position:relative;padding:28px}
+.plan svg{display:block;width:100%;height:auto}
+.room{fill:rgba(255,255,255,.015);stroke:rgba(255,255,255,.28);stroke-width:1.2;cursor:pointer;transition:fill .5s}
+.room:hover{fill:rgba(255,255,255,.04)}
+.room.leak{fill:rgba(227,38,47,.18);stroke:var(--red);animation:pulse .8s infinite}
+.glow{opacity:0;transition:opacity .7s;pointer-events:none}
+.glow.on{opacity:1}
+.rname{font-family:var(--mono);font-size:10px;letter-spacing:.14em;fill:#9AA0AA;pointer-events:none;text-transform:uppercase}
+.rtemp{font-family:var(--sans);font-size:20px;font-weight:600;fill:var(--ink);pointer-events:none}
+.wall-win{stroke:var(--cool);stroke-width:3;transition:stroke-dashoffset 1.2s}
+.door-dot{fill:#3a3f48;transition:fill .4s}
+.perim{fill:none;stroke:var(--red);stroke-width:1.5;stroke-dasharray:8 8;opacity:0;transition:opacity .5s;animation:march 1.2s linear infinite}
+.perim.on{opacity:.9}
+.armedtag{opacity:0;transition:opacity .4s}.armedtag.on{opacity:1}
+.toggles{background:var(--bg2);padding:24px;display:flex;flex-direction:column;gap:2px}
+.toggles h4{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.2em;color:var(--mute);margin-bottom:14px}
+.tg{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0;border-top:1px solid var(--line);text-align:left;width:100%}
+.tg b{display:block;font-size:15px;font-weight:600}
+.tg small{font-size:12px;color:var(--mute)}
+.sw{width:46px;height:26px;border-radius:13px;background:#2A2E35;position:relative;flex:none;transition:background .3s}
+.sw::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.tg.on .sw{background:var(--red)}
+.tg.on .sw::after{transform:translateX(20px)}
+.tg.test .sw{background:transparent;border:1px solid var(--line2);width:auto;height:auto;border-radius:0;padding:6px 10px;font-family:var(--mono);font-size:10px;letter-spacing:.14em}
+.tg.test .sw::after{display:none}
+.alert{margin-top:auto;border:1px solid var(--red);background:rgba(227,38,47,.08);padding:14px 16px;font-size:13px;display:none}
+.alert b{color:var(--red);display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;margin-bottom:4px}
+.alert.show{display:block;animation:evIn .4s}
+@keyframes evIn{from{opacity:0;transform:translateY(-10px)}}
+.hint{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--dim);position:absolute;left:28px;bottom:16px}
+
+/* systems */
+.systems{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--line);border:1px solid var(--line)}
+.sys{background:var(--bg);padding:34px 28px 30px;position:relative;overflow:hidden;min-height:260px;transition:background .4s}
+.sys::before{content:"";position:absolute;left:0;top:0;height:2px;width:0;background:var(--red);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.sys:hover{background:var(--panel)}
+.sys:hover::before{width:100%}
+.sys .n{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.14em}
+.sys svg{width:34px;height:34px;stroke:var(--ink);fill:none;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;margin:28px 0 22px;transition:stroke .3s,transform .5s cubic-bezier(.2,.8,.2,1)}
+.sys:hover svg{stroke:var(--warm);transform:translateY(-4px)}
+.sys h3{font-size:19px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
+.sys p{font-size:14px;color:var(--mute)}
+
+/* voice */
+.voice{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.chat{border:1px solid var(--line);background:var(--bg2);padding:28px;min-height:330px;display:flex;flex-direction:column;gap:14px;justify-content:flex-end;overflow:hidden}
+.msg{max-width:85%;padding:14px 18px;font-size:15px;animation:evIn .45s cubic-bezier(.2,.8,.2,1)}
+.msg.me{align-self:flex-end;background:#1E2229;border:1px solid var(--line2)}
+.msg.home{align-self:flex-start;border-left:2px solid var(--warm);background:rgba(255,194,122,.05)}
+.msg.home small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--warm);margin-bottom:4px}
+.wave{display:flex;gap:3px;align-items:center;height:20px;align-self:flex-end}
+.wave i{width:3px;background:var(--ink);border-radius:2px;animation:wv .8s ease-in-out infinite}
+.wave i:nth-child(2){animation-delay:.1s}.wave i:nth-child(3){animation-delay:.2s}.wave i:nth-child(4){animation-delay:.3s}.wave i:nth-child(5){animation-delay:.4s}
+@keyframes wv{0%,100%{height:4px}50%{height:18px}}
+.vlist{list-style:none;margin-top:34px;display:grid;gap:0}
+.vlist li{padding:16px 0;border-top:1px solid var(--line);display:flex;gap:16px;color:#C4C7CC}
+.vlist li span{font-family:var(--mono);font-size:11px;color:var(--red);letter-spacing:.14em;padding-top:3px}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--line);position:relative}
+.steps .prog{position:absolute;left:0;top:-1px;height:1px;width:0;background:var(--red);box-shadow:0 0 12px var(--red)}
+.step{padding:34px 22px 10px 0}
+.step:not(:nth-child(2)){padding-left:22px;border-left:1px solid var(--line)}
+.step .n{font-family:var(--mono);font-size:12px;color:var(--red);letter-spacing:.14em}
+.step h3{font-size:19px;font-weight:700;letter-spacing:-.02em;margin:46px 0 10px;line-height:1.15}
+.step p{font-size:14px;color:var(--mute)}
+.step .free{display:inline-block;margin-top:14px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;border:1px solid var(--line2);padding:4px 8px}
+
+/* cases */
+.cases{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.case{background:var(--panel);border:1px solid var(--line);transition:border-color .3s}
+.case:hover{border-color:var(--line2)}
+.case .ph{position:relative;aspect-ratio:4/5;overflow:hidden}
+.case .ph img{width:100%;height:100%;object-fit:cover;filter:grayscale(.35) contrast(1.05) brightness(.85);transition:transform 1.2s cubic-bezier(.2,.8,.2,1),filter .6s}
+.case:hover .ph img{transform:scale(1.06);filter:none}
+.case .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,11,13,.85),transparent 45%)}
+.case .cams{position:absolute;left:24px;bottom:22px;z-index:2;display:flex;align-items:baseline;gap:10px}
+.case .cams b{font-size:64px;font-weight:800;letter-spacing:-.05em;line-height:.8}
+.case .cams span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:#C9CCD2;text-transform:uppercase}
+.case .id{position:absolute;right:20px;top:18px;z-index:2;font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:#fff}
+.case .bd{padding:24px}
+.case h3{font-size:20px;font-weight:700;letter-spacing:-.02em}
+.case p{color:var(--mute);font-size:14px;margin:4px 0 22px}
+.case .price{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);padding-top:18px}
+.case .price small{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--mute)}
+.case .price b{font-size:24px;letter-spacing:-.02em}
+
+/* about + form */
+.about{display:grid;grid-template-columns:.85fr 1.15fr;gap:2px;background:var(--line);border:1px solid var(--line)}
+.owner{position:relative;min-height:560px;overflow:hidden;background:radial-gradient(80% 50% at 50% 100%,#1a1d22,#0A0B0D)}
+.owner img{position:absolute;left:0;right:0;bottom:0;width:100%;height:auto;max-height:100%;object-fit:cover;object-position:center top;filter:grayscale(1) contrast(1.1) brightness(.85);-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 18%);mask-image:linear-gradient(180deg,transparent 0,#000 18%)}
+.owner::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,11,13,.95),transparent 30%)}
+.owner .cap{position:absolute;left:30px;right:30px;bottom:28px;z-index:2}
+.owner .cap b{font-size:22px;letter-spacing:-.02em;display:block}
+.owner .cap span{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--mute);text-transform:uppercase}
+.formbox{background:var(--bg2);padding:56px}
+.formbox .lead{margin:18px 0 36px;max-width:560px}
+form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:8px}
+.field.full{grid-column:1/-1}
+.field label{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--mute);text-transform:uppercase}
+.field input,.field select{height:56px;padding:0 18px;border:1px solid var(--line2);background:transparent;outline:none;border-radius:0;transition:border-color .2s;-webkit-appearance:none;appearance:none}
+.field select{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238B9099' fill='none'/%3E%3C/svg%3E") right 18px center no-repeat}
+.field select option{background:var(--bg2)}
+.field input:focus,.field select:focus{border-color:var(--ink)}
+.chips{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
+.chips label{cursor:pointer}
+.chips input{display:none}
+.chips span{display:inline-block;padding:9px 14px;border:1px solid var(--line2);font-size:13px;transition:.2s}
+.chips input:checked + span{border-color:var(--warm);color:var(--warm);background:rgba(255,194,122,.06)}
+.check{grid-column:1/-1;display:flex;gap:12px;align-items:flex-start;font-size:13px;color:var(--mute)}
+.check input{margin-top:3px;accent-color:var(--red)}
+.check a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+form .btn{grid-column:1/-1}
+.ok-msg{grid-column:1/-1;display:none;padding:16px;border:1px solid rgba(123,216,143,.4);color:#7BD88F;font-weight:500}
+form.sent .ok-msg{display:block}
+form .btn:disabled{opacity:.45;cursor:not-allowed}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.form-err{grid-column:1/-1;color:var(--red);font-size:14px}
+.form-err:empty{display:none}
+.copy .legal{display:flex;flex-wrap:wrap;gap:6px 20px}
+.quote{color:#C4C7CC;font-size:15px;line-height:1.7;margin-top:40px;padding-top:28px;border-top:1px solid var(--line);max-width:620px}
+
+footer{padding:80px 0 40px;margin-top:140px;border-top:1px solid var(--line)}
+.foot{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:48px}
+.foot h4{font-family:var(--mono);font-weight:500;font-size:10px;letter-spacing:.2em;color:var(--mute);margin-bottom:16px;text-transform:uppercase}
+.foot p{color:#B4B8BF;font-size:15px}
+.foot .big{font-size:22px;font-weight:600;letter-spacing:-.01em;display:block;margin-bottom:6px;transition:color .2s}
+.foot .big:hover{color:var(--red)}
+.copy{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:64px;padding-top:24px;border-top:1px solid var(--line);font-size:13px;color:var(--dim)}
+.copy a:hover{color:var(--ink)}
+
+.call{position:fixed;right:28px;bottom:28px;z-index:60;width:60px;height:60px;border-radius:50%;background:var(--red);display:grid;place-items:center;box-shadow:0 12px 40px -8px rgba(227,38,47,.7)}
+.call::before{content:"";position:absolute;inset:0;border-radius:50%;border:1px solid var(--red);animation:ring 2.2s infinite}
+@keyframes ring{from{transform:scale(1);opacity:.9}to{transform:scale(1.7);opacity:0}}
+.call svg{width:22px;height:22px;fill:#fff}
+
+.rv{opacity:0;transform:translateY(36px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+@media (max-width:1180px){
+  .menu{display:none}
+  .cat-btn{display:inline-flex}
+  .systems{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:repeat(3,1fr)}
+  .step:nth-child(5){border-left:0;padding-left:0}
+  .step{border-bottom:1px solid var(--line);padding-bottom:30px}
+  .planbox{grid-template-columns:1fr}
+}
+@media (max-width:900px){
+  .hero{height:auto;min-height:0}
+  .hero::before{background:linear-gradient(180deg,rgba(10,11,13,.6) 0,rgba(10,11,13,0) 18%,rgba(10,11,13,0) 40%,rgba(10,11,13,.95) 62%,var(--bg) 100%)}
+  .hero .hero-content{height:auto;padding-top:calc(60px + 64vw);padding-bottom:28px}
+  .ctrl{position:relative;right:auto;bottom:auto;width:auto;margin:0 32px 40px}
+  .cases{grid-template-columns:1fr 1fr}
+  .voice,.about{grid-template-columns:1fr}
+  .owner{min-height:440px}
+  .formbox{padding:36px}
+  .stats{grid-template-columns:1fr 1fr}
+  .stat:nth-child(2){border:0}.stat:nth-child(3){padding-left:0}
+  .foot{grid-template-columns:1fr 1fr}
+}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  .nav .btn,.phone{display:none}
+  .ctrl{margin:0 16px 32px;padding:16px}
+  .hero-cta,.hero-cta .btn{width:100%}
+  .stat b{font-size:22px}
+  .systems,.cases,.foot,form{grid-template-columns:1fr}
+  .sys{min-height:0}
+  .steps{grid-template-columns:1fr}
+  .step,.step:not(:nth-child(2)){padding-left:0;border-left:0}
+  .step h3{margin-top:14px}
+  .block{padding:96px 0}
+  .plan{padding:12px}
+  .hint{display:none}
+  .formbox{padding:24px}
+  .ro b{font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<header id="hdr">
+  <div class="wrap nav">
+    <a href="#top" class="logo"><span class="mark"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9H3z"/><rect class="win" id="logoWin" x="10" y="12" width="4" height="4"/></svg></span><span>SMART HOME<small>УМНЫЙ ДОМ · КАЗАНЬ</small></span></a>
+    <nav class="menu">
+      <a href="#plan">Как работает</a>
+      <a href="#systems">Системы</a>
+      <a href="catalog.html" class="cat-link">Каталог</a>
+      <a href="#steps">Этапы</a>
+      <a href="#cases">Проекты</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+    <div class="nav-right">
+      <a class="phone" href="tel:+79625565997">+7 962 556-59-97</a>
+      <a class="btn btn-line cat-btn" href="catalog.html">Каталог</a>
+      <a class="btn btn-red" href="#form">Получить расчёт</a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="house" id="house">
+    <img src="img/8556daa437b811f09f86.jpg" alt="Загородный дом с системой умный дом">
+    <!-- windows: left/top/width/height in % of the photo -->
+    <div class="w round up" style="left:33.3%;top:20%;width:2.4%;height:8.6%"></div>
+    <div class="w round up" style="left:62.7%;top:22%;width:2.5%;height:8%"></div>
+    <div class="w up bed" style="left:31.2%;top:35.6%;width:7.6%;height:14.5%"></div>
+    <div class="w up kid" style="left:59.6%;top:35.4%;width:3%;height:11.4%"></div>
+    <div class="w up kid" style="left:64.2%;top:37%;width:2.6%;height:10.8%"></div>
+    <div class="w up bath" style="left:70.8%;top:43.8%;width:1.2%;height:6%"></div>
+    <div class="w down liv" style="left:31.2%;top:59.6%;width:7.4%;height:15.6%"></div>
+    <div class="w down kit" style="left:46.3%;top:59.2%;width:2.7%;height:13.6%"></div>
+    <div class="w down hall" style="left:62.4%;top:59.4%;width:3.1%;height:16%"></div>
+    <div class="w down liv" style="left:18.8%;top:61%;width:5.2%;height:13.4%"></div>
+    <i class="lamp" style="left:29.4%;top:63.4%"></i>
+    <i class="lamp" style="left:57%;top:62.6%"></i>
+    <i class="lamp" style="left:66.8%;top:63.4%"></i>
+    <i class="path" style="left:12%;top:78.4%"></i><i class="path" style="left:24%;top:78.6%"></i><i class="path" style="left:44%;top:81%"></i>
+    <i class="path" style="left:56%;top:82.4%"></i><i class="path" style="left:70%;top:81.6%"></i><i class="path" style="left:84%;top:79.4%"></i>
+    <div class="armed" id="armed">
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M12 80 L46 90 L92 83 L88 76 L62 73.5 L34 74.5 L16 76.5 Z" vector-effect="non-scaling-stroke"/></svg>
+      <i style="left:34.9%;top:67%"></i><i style="left:63.9%;top:67%"></i><i style="left:47.6%;top:66%"></i>
+    </div>
+  </div>
+  <div class="torch" id="torch"></div>
+
+  <div class="wrap hero-content">
+    <span class="label" style="margin-bottom:28px"><b>●</b> Умный дом под ключ · Казань и РТ</span>
+    <h1><span class="line"><span>Дом, который</span></span><span class="line"><span>думает</span></span><span class="line"><span class="warm">за вас.</span></span></h1>
+    <p class="hero-sub">Свет, климат, безопасность, видеонаблюдение и доступ — в одном приложении. Проектируем, монтируем и настраиваем под ключ. Управление с телефона и голосом.</p>
+    <div class="hero-cta">
+      <a class="btn btn-red" href="#form">Рассчитать проект <span class="arr">→</span></a>
+      <a class="btn btn-line" href="#plan">Как это работает</a>
+    </div>
+  </div>
+
+  <div class="ctrl" id="ctrl">
+    <div class="top"><span>СЦЕНАРИИ</span><b id="ctrlTime">--:--</b></div>
+    <div class="scenes" id="scenes">
+      <button class="scene-btn" data-s="home"><b>Я дома</b><small>СВЕТ · КЛИМАТ</small><i class="bar"></i></button>
+      <button class="scene-btn" data-s="night"><b>Ночь</b><small>ТИШИНА · ПЕРИМЕТР</small><i class="bar"></i></button>
+      <button class="scene-btn" data-s="away"><b>Ухожу</b><small>ОХРАНА · ЭКО</small><i class="bar"></i></button>
+      <button class="scene-btn" data-s="guests"><b>Гости</b><small>ВЕСЬ СВЕТ · МУЗЫКА</small><i class="bar"></i></button>
+    </div>
+    <div class="readouts">
+      <div class="ro"><span>СВЕТ</span><b id="roLight">—</b></div>
+      <div class="ro"><span>КЛИМАТ</span><b id="roTemp">—</b></div>
+      <div class="ro"><span>ШТОРЫ</span><b id="roCurt">—</b></div>
+      <div class="ro"><span>ОХРАНА</span><b id="roSec">—</b></div>
+    </div>
+  </div>
+</section>
+<div class="wrap">
+  <div class="stats">
+    <div class="stat"><b>Под ключ</b><span>от проекта до обслуживания</span></div>
+    <div class="stat"><b>до 3 лет</b><span>гарантия на работы</span></div>
+    <div class="stat"><b>Договор</b><span>официальная работа</span></div>
+    <div class="stat"><b>Весь РТ</b><span>Казань и районы</span></div>
+  </div>
+</div>
+
+<!-- PLAN -->
+<section class="block" id="plan">
+  <div class="wrap">
+    <div class="head rv">
+      <div><span class="label"><b>01</b> Как это работает</span>
+      <h2>Весь дом —<br><em>в одном касании.</em></h2></div>
+      <p class="lead">Нажмите на комнату, чтобы включить свет. Переключатели справа — то, что умный дом делает сам: держит температуру, закрывает шторы, охраняет и перекрывает воду при протечке.</p>
+    </div>
+    <div class="planbox rv">
+      <div class="plan">
+        <svg viewBox="0 0 820 520" id="planSvg">
+          <defs>
+            <radialGradient id="lg"><stop offset="0" stop-color="#FFC27A" stop-opacity=".55"/><stop offset=".6" stop-color="#FFC27A" stop-opacity=".12"/><stop offset="1" stop-color="#FFC27A" stop-opacity="0"/></radialGradient>
+            <clipPath id="houseClip"><rect x="40" y="40" width="740" height="440"/></clipPath>
+          </defs>
+          <rect class="perim" id="perim" x="22" y="22" width="776" height="476"/>
+          <g clip-path="url(#houseClip)" id="glows"></g>
+          <g id="rooms"></g>
+          <rect x="40" y="40" width="740" height="440" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="3"/>
+          <g id="wins"></g>
+          <g id="doors"></g>
+          <g class="armedtag" id="armedTag"><rect x="590" y="6" width="190" height="22" fill="#E3262F"/><text x="600" y="21" font-family="JetBrains Mono" font-size="11" fill="#fff" letter-spacing="1.5">● ПЕРИМЕТР ПОД ОХРАНОЙ</text></g>
+        </svg>
+        <span class="hint">НАЖМИТЕ НА КОМНАТУ</span>
+      </div>
+      <div class="toggles">
+        <h4>УПРАВЛЕНИЕ</h4>
+        <button class="tg" data-t="light"><span><b>Свет во всём доме</b><small id="tLight">включено 2 зоны</small></span><i class="sw"></i></button>
+        <button class="tg on" data-t="climate"><span><b>Климат-контроль</b><small id="tClimate">поддерживает 22,5°</small></span><i class="sw"></i></button>
+        <button class="tg" data-t="curtains"><span><b>Шторы</b><small id="tCurt">открыты</small></span><i class="sw"></i></button>
+        <button class="tg" data-t="security"><span><b>Охрана</b><small id="tSec">снята</small></span><i class="sw"></i></button>
+        <button class="tg test" data-t="leak"><span><b>Датчик протечки</b><small>проверить сценарий</small></span><i class="sw">ТЕСТ</i></button>
+        <div class="alert" id="leakAlert"><b>ПРОТЕЧКА · ВАННАЯ</b>Краны перекрыты автоматически. Уведомление отправлено владельцу.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SYSTEMS -->
+<section class="block" id="systems" style="padding-top:20px">
+  <div class="wrap">
+    <div class="head rv">
+      <div><span class="label"><b>02</b> Системы</span>
+      <h2>Всё, что нужно дому.<br><em>Ничего лишнего.</em></h2></div>
+      <p class="lead">Собираем только то, что нужно вам, и связываем в одну систему — от пары сценариев в квартире до полного комплекса в загородном доме.</p>
+    </div>
+    <div class="systems rv">
+      <div class="sys"><span class="n">01</span><svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg><h3>Освещение</h3><p>Сценарии, плавное включение, датчики присутствия, подсветка фасада и участка.</p></div>
+      <div class="sys"><span class="n">02</span><svg viewBox="0 0 24 24"><path d="M14 14.8V4a2 2 0 0 0-4 0v10.8a4 4 0 1 0 4 0z"/><path d="M12 17v-5"/></svg><h3>Климат</h3><p>Отопление, тёплые полы и кондиционеры — заданная температура в каждой комнате.</p></div>
+      <div class="sys"><span class="n">03</span><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg><h3>Безопасность</h3><p>Охранная сигнализация, датчики открытия и движения, тревога на телефон.</p></div>
+      <div class="sys"><span class="n">04</span><svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><h3>Видеонаблюдение</h3><p>Камеры по периметру и внутри, запись в архив, просмотр из любой точки мира.</p></div>
+      <div class="sys"><span class="n">05</span><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1"/></svg><h3>Контроль доступа</h3><p>Умные замки, видеодомофон, ворота и шлагбаум с распознаванием номеров.</p></div>
+      <div class="sys"><span class="n">06</span><svg viewBox="0 0 24 24"><path d="M12 2.7S6 9.5 6 14a6 6 0 0 0 12 0c0-4.5-6-11.3-6-11.3z"/></svg><h3>Защита от протечек</h3><p>Датчики воды и краны с электроприводом — перекрывают воду за секунды.</p></div>
+      <div class="sys"><span class="n">07</span><svg viewBox="0 0 24 24"><path d="M3 3h18M5 3v18M19 3v18"/><path d="M8 3v12M11 3v10M14 3v12M17 3v10"/></svg><h3>Шторы и ворота</h3><p>Электрокарнизы, рольставни, откатные ворота — по расписанию или с телефона.</p></div>
+      <div class="sys"><span class="n">08</span><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><h3>Мультирум и кино</h3><p>Музыка в любой комнате и домашний кинотеатр одной кнопкой.</p></div>
+    </div>
+    <div class="sys-more rv"><p><b>Каталог оборудования Aqara</b> — хабы, свет, датчики, замки, камеры, шторы и готовые комплекты с ценами.</p><a class="btn btn-red" href="catalog.html">Открыть каталог <span class="arr">→</span></a></div>
+  </div>
+</section>
+
+<!-- VOICE -->
+<section class="block" id="voice" style="padding-top:20px">
+  <div class="wrap voice">
+    <div class="rv">
+      <span class="label"><b>03</b> Управление</span>
+      <h2>Голосом, с телефона<br><em>или само.</em></h2>
+      <p class="lead" style="margin-top:22px">Дом реагирует на команды, расписание и события. Уезжаете — он закрывается сам. Подъезжаете — открывает ворота и включает свет.</p>
+      <ul class="vlist">
+        <li><span>01</span>Приложение на телефоне — весь дом на одном экране</li>
+        <li><span>02</span>Голосовые команды через умную колонку</li>
+        <li><span>03</span>Автоматические сценарии по времени и датчикам</li>
+      </ul>
+    </div>
+    <div class="chat rv" id="chat"></div>
+  </div>
+</section>
+
+<!-- STEPS -->
+<section class="block" id="steps" style="padding-top:20px">
+  <div class="wrap">
+    <div class="head rv">
+      <div><span class="label"><b>04</b> Этапы</span>
+      <h2>Под ключ.<br><em>Без вашего участия.</em></h2></div>
+      <p class="lead">Один подрядчик на весь цикл — от осмотра объекта до обслуживания после запуска.</p>
+    </div>
+    <div class="steps rv" id="stepsGrid">
+      <i class="prog" id="prog"></i>
+      <div class="step"><span class="n">01</span><h3>Выезд и аудит</h3><p>Обсуждаем задачи, осматриваем объект.</p><span class="free">БЕСПЛАТНО</span></div>
+      <div class="step"><span class="n">02</span><h3>Проект</h3><p>Схема систем, сценарии и смета.</p></div>
+      <div class="step"><span class="n">03</span><h3>Оборудование</h3><p>Надёжные устройства под ваш бюджет.</p></div>
+      <div class="step"><span class="n">04</span><h3>Монтаж</h3><p>Аккуратная прокладка кабеля и установка.</p></div>
+      <div class="step"><span class="n">05</span><h3>Настройка</h3><p>Сценарии, приложение, обучение семьи.</p></div>
+      <div class="step"><span class="n">06</span><h3>Поддержка</h3><p>Обслуживание и доработки после запуска.</p><span class="free">ГАРАНТИЯ ДО 3 ЛЕТ</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CASES -->
+<section class="block" id="cases" style="padding-top:20px">
+  <div class="wrap">
+    <div class="head rv">
+      <div><span class="label"><b>05</b> Проекты</span>
+      <h2>Реализованные объекты.</h2></div>
+      <p class="lead">Реальные работы нашей команды с итоговой стоимостью под ключ.</p>
+    </div>
+    <div class="cases">
+      <article class="case rv"><div class="ph"><img src="img/IMG_20260616_144128.jpg" alt="Камера на частном доме"><span class="id">OBJ-01</span><div class="cams"><b>5</b><span>камер<br>по периметру</span></div></div>
+        <div class="bd"><h3>Частный дом</h3><p>Видеонаблюдение по периметру, доступ с телефона</p><div class="price"><small>ПОД КЛЮЧ</small><b>120 000 ₽</b></div></div></article>
+      <article class="case rv" style="transition-delay:.1s"><div class="ph"><img src="img/IMG_20260611_155514.jpg" alt="Камера в подземной парковке"><span class="id">OBJ-02</span><div class="cams"><b>2</b><span>камеры<br>Hikvision</span></div></div>
+        <div class="bd"><h3>Подземная парковка</h3><p>Оборудование Hikvision, контроль въезда</p><div class="price"><small>ПОД КЛЮЧ</small><b>54 000 ₽</b></div></div></article>
+      <article class="case rv" style="transition-delay:.2s"><div class="ph"><img src="img/IMG_20260616_143852.jpg" alt="Камера на фасаде дома"><span class="id">OBJ-03</span><div class="cams"><b>3</b><span>камеры<br>по периметру</span></div></div>
+        <div class="bd"><h3>Частный дом</h3><p>Фасад и придомовая территория</p><div class="price"><small>ПОД КЛЮЧ</small><b>65 000 ₽</b></div></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT + FORM -->
+<section class="block" id="form" style="padding-top:20px;padding-bottom:0">
+  <div class="wrap">
+    <div class="about rv">
+      <div class="owner"><img src="img/IMG_20260611_154506.jpg" alt="Динар Сафиуллин"><div class="cap"><b>Сафиуллин Динар Дамирович</b><span>SmartHome Казань</span></div></div>
+      <div class="formbox">
+        <span class="label"><b>06</b> Консультация</span>
+        <h2>Расскажите о доме —<br>мы предложим решение.</h2>
+        <p class="lead">Оставьте номер — инженер перезвонит, уточнит задачи и подготовит расчёт. Выезд на объект бесплатно.</p>
+        <form id="leadForm" novalidate>
+          <div class="field"><label for="nm">Имя</label><input id="nm" name="name" autocomplete="name"></div>
+          <div class="field"><label for="phoneIn">Телефон</label><input name="phone" id="phoneIn" placeholder="+7 (___) ___-__-__" inputmode="tel" autocomplete="tel"></div>
+          <div class="field full"><label for="ob">Объект</label><select id="ob" name="obj"><option>Загородный дом / коттедж</option><option>Квартира</option><option>Дача</option><option>Офис / коммерция</option></select></div>
+          <div class="chips">
+            <label><input type="checkbox" checked><span>Освещение</span></label>
+            <label><input type="checkbox"><span>Климат</span></label>
+            <label><input type="checkbox" checked><span>Безопасность</span></label>
+            <label><input type="checkbox" checked><span>Видеонаблюдение</span></label>
+            <label><input type="checkbox"><span>Доступ и ворота</span></label>
+            <label><input type="checkbox"><span>Протечки</span></label>
+            <label><input type="checkbox"><span>Шторы</span></label>
+            <label><input type="checkbox"><span>Мультирум</span></label>
+          </div>
+          <input class="hp" id="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <label class="check"><input type="checkbox" id="consent"> <span>Я даю <a href="consent.html" target="_blank">согласие на обработку персональных данных</a> и ознакомлен(а) с <a href="privacy.html" target="_blank">политикой обработки персональных данных</a></span></label>
+          <span class="form-err" id="formErr"></span>
+          <button class="btn btn-red" type="submit" id="leadBtn" disabled>Получить расчёт <span class="arr">→</span></button>
+          <div class="ok-msg">Заявка <span id="leadId"></span> принята. Скоро перезвоним.</div>
+        </form>
+        <p class="quote">Мы предоставляем комплексные решения в Казани — для частных лиц и организаций. Опыт, строгие стандарты и надёжная защита вашего дома и близких.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contacts">
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <a href="#top" class="logo" style="margin-bottom:22px"><span class="mark"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9H3z"/><rect class="win" x="10" y="12" width="4" height="4"/></svg></span><span>SMART HOME<small>УМНЫЙ ДОМ · КАЗАНЬ</small></span></a>
+        <p>г. Казань, ул. Салимжанова, д. 5<br>Работаем во всех районах Казани и РТ</p>
+      </div>
+      <div>
+        <h4>Телефоны</h4>
+        <a class="big" href="tel:+79625565997">+7 962 556-59-97</a>
+        <a class="big" href="tel:+79093084710">+7 909 308-47-10</a>
+      </div>
+      <div>
+        <h4>Реквизиты</h4>
+        <p>ИП Сафиуллин Дамир Наилевич<br>ИНН 165708976470<br>ОГРНИП 319169000143447</p>
+      </div>
+    </div>
+    <div class="copy"><span>© <span id="yr"></span> Smart Home. Умный дом и видеонаблюдение в Казани</span><span class="legal"><a href="privacy.html">Политика обработки персональных данных</a><a href="consent.html">Согласие на обработку ПДн</a><a href="terms.html">Условия использования</a></span></div>
+  </div>
+</footer>
+
+<a class="call" href="tel:+79625565997" aria-label="Позвонить"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg></a>
+
+<script src="send.js"></script>
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const pad = n => String(n).padStart(2, '0');
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const svgNS = 'http://www.w3.org/2000/svg';
+
+$('#yr').textContent = new Date().getFullYear();
+addEventListener('scroll', () => $('#hdr').classList.toggle('scrolled', scrollY > 20), { passive: true });
+const tickClock = () => { const d = new Date(); $('#ctrlTime').textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+tickClock(); setInterval(tickClock, 10000);
+
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12 });
+$$('.rv').forEach(el => io.observe(el));
+
+/* ---------- HERO: fit the photo so window overlays stay aligned ---------- */
+const hero = $('#top'), house = $('#house'), RATIO = 1344 / 768;
+function fitHouse() {
+  const w = hero.clientWidth, h = hero.clientHeight;
+  const narrow = w < 900;
+  let W, left, top;
+  if (narrow) {
+    W = w * 1.55;
+    left = (w - W) * .5;
+    top = 60;
+  } else {
+    // whole house visible on the right, faded into the night on the left and top
+    W = Math.min(Math.max(w * .85, h * 1.45), h * RATIO * 1.02);
+    left = w - W * .94;
+    top = h - W / RATIO;
+  }
+  house.classList.toggle('fade', !narrow);
+  Object.assign(house.style, { width: W + 'px', height: W / RATIO + 'px', left: left + 'px', top: top + 'px' });
+}
+fitHouse(); addEventListener('resize', fitHouse);
+
+/* cursor = warm light */
+const torch = $('#torch');
+hero.addEventListener('pointermove', e => {
+  const r = hero.getBoundingClientRect();
+  torch.style.setProperty('--x', (e.clientX - r.left) + 'px');
+  torch.style.setProperty('--y', (e.clientY - r.top) + 'px');
+});
+
+/* scenes */
+const wins = $$('.house .w'), lamps = $$('.house .lamp'), paths = $$('.house .path'), armed = $('#armed');
+const roLight = $('#roLight'), roTemp = $('#roTemp'), roCurt = $('#roCurt'), roSec = $('#roSec');
+const logoWin = $('#logoWin');
+const SCENES = {
+  home:   { win: w => w.classList.contains('down') || w.classList.contains('bed') || w.classList.contains('kid'), dim: [], lamps: true, paths: true, temp: 23, curt: 'Открыты', sec: 'Снята', armed: false },
+  night:  { win: w => w.classList.contains('bed'), dim: ['bed'], lamps: true, paths: false, temp: 21, curt: 'Закрыты', sec: 'Периметр', armed: true },
+  away:   { win: () => false, dim: [], lamps: false, paths: false, temp: 18, curt: 'Закрыты', sec: 'Включена', armed: true },
+  guests: { win: () => true, dim: [], lamps: true, paths: true, temp: 22, curt: 'Открыты', sec: 'Снята', armed: false }
+};
+let shownTemp = 21;
+function countTemp(to) {
+  const from = shownTemp, t0 = performance.now();
+  const f = t => {
+    const p = Math.min(1, (t - t0) / 1200);
+    shownTemp = from + (to - from) * p;
+    roTemp.textContent = shownTemp.toFixed(1).replace('.', ',') + '°';
+    if (p < 1) requestAnimationFrame(f);
+  };
+  requestAnimationFrame(f);
+}
+function applyScene(name) {
+  const s = SCENES[name];
+  $$('.scene-btn').forEach(b => {
+    b.classList.toggle('act', b.dataset.s === name);
+    const bar = b.querySelector('.bar'); bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = '';
+  });
+  let lit = 0;
+  wins.forEach((w, i) => {
+    const on = s.win(w);
+    if (on) lit++;
+    w.classList.toggle('dim', s.dim.some(c => w.classList.contains(c)));
+    setTimeout(() => w.classList.toggle('on', on), i * 90);
+  });
+  lamps.forEach((l, i) => setTimeout(() => l.classList.toggle('on', s.lamps), 300 + i * 120));
+  paths.forEach((p, i) => setTimeout(() => p.classList.toggle('on', s.paths), 500 + i * 110));
+  armed.classList.toggle('on', s.armed);
+  house.classList.toggle('lit', lit > 3);
+  roLight.textContent = lit ? `${lit} зон` : 'Выкл';
+  roLight.className = lit ? 'warm' : '';
+  countTemp(s.temp);
+  roCurt.textContent = s.curt;
+  roSec.textContent = s.sec;
+  roSec.className = s.armed ? 'red' : '';
+  logoWin.style.opacity = lit ? 1 : .15;
+}
+const order = ['home', 'guests', 'night', 'away'];
+let si = 0, autoTimer;
+function autoNext() { applyScene(order[si++ % order.length]); autoTimer = setTimeout(autoNext, 7000); }
+autoTimer = setTimeout(autoNext, 900);
+$('#scenes').addEventListener('click', e => {
+  const b = e.target.closest('.scene-btn'); if (!b) return;
+  clearTimeout(autoTimer); $('#ctrl').classList.add('manual');
+  applyScene(b.dataset.s);
+});
+
+/* ---------- FLOOR PLAN ---------- */
+const ROOMS = [
+  { id: 'liv',  name: 'Гостиная',  x: 40,  y: 40,  w: 340, h: 250, t: 22.5, on: true },
+  { id: 'kit',  name: 'Кухня',     x: 380, y: 40,  w: 200, h: 170, t: 22.0, on: true },
+  { id: 'bed',  name: 'Спальня',   x: 580, y: 40,  w: 200, h: 220, t: 20.5 },
+  { id: 'hall', name: 'Прихожая',  x: 380, y: 210, w: 200, h: 120, t: 21.5 },
+  { id: 'off',  name: 'Кабинет',   x: 40,  y: 290, w: 200, h: 190, t: 22.0 },
+  { id: 'kid',  name: 'Детская',   x: 240, y: 330, w: 240, h: 150, t: 23.0 },
+  { id: 'bath', name: 'Ванная',    x: 480, y: 330, w: 140, h: 150, t: 25.0 },
+  { id: 'gar',  name: 'Гардероб',  x: 620, y: 260, w: 160, h: 220, t: 20.0 }
+];
+const roomsG = $('#rooms'), glowsG = $('#glows'), winsG = $('#wins'), doorsG = $('#doors');
+const mk = (tag, attrs, parent) => { const e = document.createElementNS(svgNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; };
+ROOMS.forEach(r => {
+  r.glow = mk('circle', { class: 'glow', cx: r.x + r.w / 2, cy: r.y + r.h / 2, r: Math.max(r.w, r.h) * .75, fill: 'url(#lg)' }, glowsG);
+  r.el = mk('rect', { class: 'room', x: r.x, y: r.y, width: r.w, height: r.h }, roomsG);
+  mk('text', { class: 'rname', x: r.x + 16, y: r.y + 26 }, roomsG).textContent = r.name;
+  r.tt = mk('text', { class: 'rtemp', x: r.x + 16, y: r.y + 54 }, roomsG);
+  r.tt.textContent = r.t.toFixed(1).replace('.', ',') + '°';
+  r.el.addEventListener('click', () => { r.on = !r.on; renderLights(); });
+});
+// windows on outer walls
+[[100, 40, 220, 40], [430, 40, 530, 40], [620, 40, 740, 40], [780, 80, 780, 200], [780, 320, 780, 430], [40, 90, 40, 230], [40, 340, 40, 440], [290, 480, 430, 480]]
+  .forEach(([x1, y1, x2, y2]) => {
+    const len = Math.hypot(x2 - x1, y2 - y1);
+    mk('line', { class: 'wall-win', x1, y1, x2, y2, 'stroke-dasharray': len, 'stroke-dashoffset': 0, 'data-len': len }, winsG);
+  });
+[[500, 480], [780, 250], [40, 265]].forEach(([cx, cy]) => mk('circle', { class: 'door-dot', cx, cy, r: 6 }, doorsG));
+
+const tLight = $('#tLight');
+function renderLights() {
+  let n = 0;
+  ROOMS.forEach(r => { r.glow.classList.toggle('on', !!r.on); if (r.on) n++; });
+  tLight.textContent = n ? `включено ${n} ${n === 1 ? 'зона' : n < 5 ? 'зоны' : 'зон'}` : 'всё выключено';
+  $('[data-t="light"]').classList.toggle('on', n === ROOMS.length);
+}
+renderLights();
+
+let climate = true, climTimer;
+function runClimate() {
+  clearInterval(climTimer);
+  climTimer = setInterval(() => {
+    ROOMS.forEach(r => {
+      const target = climate ? 22.5 : r.t + (Math.random() - .5) * .6;
+      r.t += (target - r.t) * .25;
+      r.tt.textContent = r.t.toFixed(1).replace('.', ',') + '°';
+    });
+  }, 900);
+}
+runClimate();
+
+$$('.tg').forEach(b => b.addEventListener('click', async () => {
+  const t = b.dataset.t;
+  if (t === 'light') {
+    const allOn = ROOMS.every(r => r.on);
+    ROOMS.forEach(r => r.on = !allOn);
+    renderLights();
+  } else if (t === 'climate') {
+    climate = !climate; b.classList.toggle('on', climate);
+    $('#tClimate').textContent = climate ? 'поддерживает 22,5°' : 'выключен';
+  } else if (t === 'curtains') {
+    const on = b.classList.toggle('on');
+    $$('.wall-win').forEach(l => l.setAttribute('stroke-dashoffset', on ? l.dataset.len : 0));
+    $('#tCurt').textContent = on ? 'закрыты' : 'открыты';
+  } else if (t === 'security') {
+    const on = b.classList.toggle('on');
+    $('#perim').classList.toggle('on', on);
+    $('#armedTag').classList.toggle('on', on);
+    $$('.door-dot').forEach(d => d.style.fill = on ? '#E3262F' : '');
+    $('#tSec').textContent = on ? 'включена · двери и окна' : 'снята';
+  } else if (t === 'leak') {
+    const bath = ROOMS.find(r => r.id === 'bath');
+    bath.el.classList.add('leak');
+    $('#leakAlert').classList.add('show');
+    await wait(4000);
+    bath.el.classList.remove('leak');
+    $('#leakAlert').classList.remove('show');
+  }
+}));
+
+/* ---------- VOICE CHAT ---------- */
+const chat = $('#chat');
+const DIALOG = [
+  ['Включи режим кино', 'Свет приглушён, шторы закрыты, проектор включён.'],
+  ['Я уезжаю', 'Охрана включена, свет выключен, отопление в эко-режиме.'],
+  ['Какая температура в детской?', 'В детской 22,5°. Тёплый пол работает.'],
+  ['Открой ворота', 'Ворота открываются. Включил свет на участке.'],
+  ['Спокойной ночи', 'Двери закрыты, периметр под охраной, свет в спальне выключится через 5 минут.']
+];
+let di = 0, chatOn = false;
+async function chatLoop() {
+  const [q, a] = DIALOG[di++ % DIALOG.length];
+  const wave = document.createElement('div'); wave.className = 'wave'; wave.innerHTML = '<i></i><i></i><i></i><i></i><i></i>';
+  chat.appendChild(wave);
+  await wait(1100);
+  wave.remove();
+  const me = document.createElement('div'); me.className = 'msg me'; me.textContent = `«${q}»`;
+  chat.appendChild(me);
+  await wait(700);
+  const home = document.createElement('div'); home.className = 'msg home'; home.innerHTML = '<small>УМНЫЙ ДОМ</small><span></span>';
+  chat.appendChild(home);
+  const txt = home.querySelector('span');
+  for (const ch of a) { txt.textContent += ch; await wait(22); }
+  while (chat.children.length > 6) chat.firstChild.remove();
+  await wait(2300);
+  chatLoop();
+}
+new IntersectionObserver(([e]) => { if (e.isIntersecting && !chatOn) { chatOn = true; chatLoop(); } }, { threshold: .3 }).observe(chat);
+
+/* ---------- steps progress ---------- */
+const grid = $('#stepsGrid'), prog = $('#prog');
+addEventListener('scroll', () => {
+  const r = grid.getBoundingClientRect();
+  prog.style.width = (clamp((innerHeight * .9 - r.top) / (innerHeight * .6), 0, 1) * 100).toFixed(1) + '%';
+}, { passive: true });
+
+/* ---------- form ---------- */
+const phoneIn = $('#phoneIn'), nameIn = $('#nm'), consent = $('#consent'), leadBtn = $('#leadBtn'), formErr = $('#formErr');
+phoneMask(phoneIn);
+consent.addEventListener('change', () => { leadBtn.disabled = !consent.checked; });
+$('#leadForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  formErr.textContent = '';
+  const okName = nameIn.value.trim().length > 0;
+  const okPhone = phoneIn.value.replace(/\D/g, '').length === 11;
+  nameIn.style.borderColor = okName ? '' : 'var(--red)';
+  phoneIn.style.borderColor = okPhone ? '' : 'var(--red)';
+  if (!okName || !okPhone) { formErr.textContent = 'Укажите имя и номер телефона.'; return; }
+  if (!consent.checked) { formErr.textContent = leadError('consent'); return; }
+  leadBtn.disabled = true;
+  try {
+    const res = await sendLead({
+      type: 'lead',
+      name: nameIn.value.trim(),
+      phone: phoneIn.value,
+      object: $('#ob').value,
+      systems: $$('.chips input:checked').map(i => i.nextElementSibling.textContent),
+      website: $('#hp').value,
+      consent: true
+    });
+    $('#leadId').textContent = res.id ? '№' + res.id : '';
+    e.target.classList.add('sent');
+  } catch (err) {
+    formErr.textContent = leadError(err.code);
+    leadBtn.disabled = !consent.checked;
+  }
+});
+})();
+</script>
+</body>
+</html>
